@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sondage Fromage</title>
+  <style>
+    :root {
+      --bg-primary: radial-gradient(circle at 50% 0%,
+          rgba(120, 120, 160, 0.08) 0%,
+          rgba(11, 11, 15, 0) 70%),
+        #0b0b0f;
+      --card-bg: rgba(255, 255, 255, 0.05);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --card-shadow: 0 60px 120px -40px rgba(0, 0, 0, 0.9);
+      --text-primary: rgba(255, 255, 255, 0.92);
+      --text-secondary: rgba(255, 255, 255, 0.5);
+      --accent: #f5c842;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100dvh;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, Inter, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+      padding: 12px 16px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: 999px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: var(--text-primary);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 180ms ease, transform 180ms ease;
+      user-select: none;
+    }
+
+    .pill:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-1px);
+    }
+
+    .pill .icon {
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .content {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 0 24px 24px;
+    }
+
+    .poll-card {
+      width: 100%;
+      max-width: 540px;
+      padding: 40px 36px;
+      border-radius: 24px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: var(--card-shadow);
+    }
+
+    .poll-title {
+      text-align: center;
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .poll-sub {
+      text-align: center;
+      font-size: 15px;
+      color: var(--text-secondary);
+      margin-bottom: 28px;
+    }
+
+    .cheese-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .cheese-option {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 22px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      cursor: pointer;
+      transition: background 180ms ease, border-color 180ms ease, transform 150ms ease;
+      user-select: none;
+    }
+
+    .cheese-option:hover {
+      background: rgba(255, 255, 255, 0.08);
+      transform: translateY(-1px);
+    }
+
+    .cheese-option.selected {
+      background: rgba(245, 200, 66, 0.12);
+      border-color: rgba(245, 200, 66, 0.5);
+    }
+
+    .cheese-emoji {
+      width: 48px;
+      height: 48px;
+      flex-shrink: 0;
+    }
+
+    .cheese-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .cheese-name {
+      font-size: 18px;
+      font-weight: 500;
+    }
+
+    .cheese-count {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .cheese-bar {
+      width: 100%;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      overflow: hidden;
+      margin-top: 4px;
+    }
+
+    .cheese-bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: var(--accent);
+      transition: width 400ms ease;
+    }
+
+    .vote-badge {
+      flex-shrink: 0;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: transparent;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      transition: all 180ms ease;
+    }
+
+    .cheese-option.selected .vote-badge {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #0b0b0f;
+    }
+
+    .cancel-row {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .cancel-btn {
+      display: none;
+      margin: 0 auto;
+      padding: 10px 22px;
+      border-radius: 999px;
+      background: rgba(255, 80, 80, 0.1);
+      border: 1px solid rgba(255, 80, 80, 0.3);
+      color: #ff8080;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 180ms ease;
+    }
+
+    .cancel-btn:hover {
+      background: rgba(255, 80, 80, 0.2);
+    }
+
+    .cancel-btn.visible {
+      display: inline-flex;
+    }
+
+    .thanks {
+      display: none;
+      text-align: center;
+      margin-top: 16px;
+      font-size: 14px;
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .thanks.visible {
+      display: block;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="topbar">
+    <div class="pill" onclick="location.href='index.html'">
+      <span class="icon">🏠</span>
+      <span>Accueil</span>
+    </div>
+    <div class="pill">
+      <span class="icon">🧀</span>
+      <span>Fromage</span>
+    </div>
+  </div>
+  <div class="content">
+    <div class="poll-card">
+      <h1 class="poll-title">🧀 Ton fromage préféré ?</h1>
+      <p class="poll-sub">Clique pour voter — tu peux changer d'avis</p>
+
+      <div class="cheese-list" id="cheeseList">
+        <div class="cheese-option" data-name="camembert">
+          <svg class="cheese-emoji" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="20" cy="24" rx="16" ry="12" fill="#f5f0e0"/>
+            <ellipse cx="20" cy="24" rx="16" ry="12" fill="url(#camGrad)" opacity="0.4"/>
+            <ellipse cx="20" cy="22" rx="14" ry="10" fill="#faf7ee"/>
+            <path d="M6 22 Q20 12 34 22" stroke="#e8e0c8" stroke-width="0.5" fill="none"/>
+            <defs>
+              <radialGradient id="camGrad" cx="0.4" cy="0.3">
+                <stop offset="0%" stop-color="#fff"/>
+                <stop offset="100%" stop-color="#d4c9a0"/>
+              </radialGradient>
+            </defs>
+          </svg>
+          <div class="cheese-info">
+            <span class="cheese-name">Camembert</span>
+            <span class="cheese-count" id="count-camembert"></span>
+            <div class="cheese-bar"><div class="cheese-bar-fill" id="bar-camembert" style="width:0%"></div></div>
+          </div>
+          <div class="vote-badge">✓</div>
+        </div>
+        <div class="cheese-option" data-name="comté">
+          <svg class="cheese-emoji" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 30 L20 8 L36 30 Z" fill="#e8a825"/>
+            <path d="M4 30 L20 8 L20 30 Z" fill="#f0c040"/>
+            <line x1="20" y1="8" x2="20" y2="30" stroke="#d49820" stroke-width="0.5"/>
+            <circle cx="15" cy="24" r="1.2" fill="#c8881a" opacity="0.5"/>
+            <circle cx="22" cy="22" r="1" fill="#c8881a" opacity="0.4"/>
+          </svg>
+          <div class="cheese-info">
+            <span class="cheese-name">Comté</span>
+            <span class="cheese-count" id="count-comté"></span>
+            <div class="cheese-bar"><div class="cheese-bar-fill" id="bar-comté" style="width:0%"></div></div>
+          </div>
+          <div class="vote-badge">✓</div>
+        </div>
+        <div class="cheese-option" data-name="emmental">
+          <svg class="cheese-emoji" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 30 L20 8 L36 30 Z" fill="#f0d848"/>
+            <path d="M4 30 L20 8 L20 30 Z" fill="#f5e060"/>
+            <line x1="20" y1="8" x2="20" y2="30" stroke="#d4b830" stroke-width="0.5"/>
+            <circle cx="14" cy="24" r="2.5" fill="#e8c830" stroke="#d4b028" stroke-width="0.5"/>
+            <circle cx="23" cy="21" r="2" fill="#e8c830" stroke="#d4b028" stroke-width="0.5"/>
+            <circle cx="19" cy="27" r="1.8" fill="#e8c830" stroke="#d4b028" stroke-width="0.5"/>
+            <circle cx="28" cy="26" r="1.5" fill="#e8c830" stroke="#d4b028" stroke-width="0.5"/>
+            <circle cx="12" cy="19" r="1.2" fill="#e8c830" stroke="#d4b028" stroke-width="0.5"/>
+          </svg>
+          <div class="cheese-info">
+            <span class="cheese-name">Emmental</span>
+            <span class="cheese-count" id="count-emmental"></span>
+            <div class="cheese-bar"><div class="cheese-bar-fill" id="bar-emmental" style="width:0%"></div></div>
+          </div>
+          <div class="vote-badge">✓</div>
+        </div>
+        <div class="cheese-option" data-name="roquefort">
+          <svg class="cheese-emoji" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 28 Q6 12 20 10 Q34 12 34 28 Z" fill="#f0ece0"/>
+            <path d="M12 28 Q14 18 20 16 Q26 18 28 28" stroke="#4a6a9a" stroke-width="1.5" fill="none" opacity="0.7"/>
+            <path d="M16 28 Q17 22 20 20 Q23 22 24 28" stroke="#3a5a8a" stroke-width="1" fill="none" opacity="0.6"/>
+            <line x1="14" y1="26" x2="18" y2="18" stroke="#4a6a9a" stroke-width="0.8" opacity="0.4"/>
+            <line x1="22" y1="18" x2="26" y2="26" stroke="#4a6a9a" stroke-width="0.8" opacity="0.4"/>
+          </svg>
+          <div class="cheese-info">
+            <span class="cheese-name">Roquefort</span>
+            <span class="cheese-count" id="count-roquefort"></span>
+            <div class="cheese-bar"><div class="cheese-bar-fill" id="bar-roquefort" style="width:0%"></div></div>
+          </div>
+          <div class="vote-badge">✓</div>
+        </div>
+      </div>
+
+      <div class="cancel-row">
+        <button class="cancel-btn" id="cancelBtn">✕ Annuler mon vote</button>
+      </div>
+      <div class="thanks" id="thanks">Merci pour ton vote ! 🧀</div>
+    </div>
+  </div>
+
+  <script>
+    const KEY = "sondage_fromage_v2";
+    const options = document.querySelectorAll(".cheese-option");
+    const cancelBtn = document.getElementById("cancelBtn");
+    const thanks = document.getElementById("thanks");
+
+    const baseVotes = { camembert: 0, comté: 0, emmental: 0, roquefort: 0 };
+
+    function getVotes() {
+      const saved = JSON.parse(localStorage.getItem(KEY) || "{}");
+      return { ...baseVotes, ...saved };
+    }
+
+    function getChoice() {
+      return localStorage.getItem(KEY + "_choice");
+    }
+
+    function setChoice(name) {
+      const prev = getChoice();
+      const votes = getVotes();
+      if (prev) votes[prev] = Math.max(0, (votes[prev] || 0) - 1);
+      if (name) votes[name] = (votes[name] || 0) + 1;
+      localStorage.setItem(KEY, JSON.stringify(votes));
+      localStorage.setItem(KEY + "_choice", name || "");
+      return votes;
+    }
+
+    function render(votes, choice) {
+      const total = Object.values(votes).reduce((a, b) => a + b, 0);
+
+      options.forEach(opt => {
+        const name = opt.dataset.name;
+        const count = votes[name] || 0;
+        const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+
+        document.getElementById("count-" + name).textContent = count + " vote" + (count > 1 ? "s" : "") + " · " + pct + "%";
+        document.getElementById("bar-" + name).style.width = pct + "%";
+
+        document.getElementById("count-" + name).style.display = choice ? "" : "none";
+        document.getElementById("bar-" + name).parentElement.style.display = choice ? "" : "none";
+
+        opt.classList.toggle("selected", name === choice);
+      });
+
+      if (choice) {
+        cancelBtn.classList.add("visible");
+        thanks.classList.add("visible");
+      } else {
+        cancelBtn.classList.remove("visible");
+        thanks.classList.remove("visible");
+      }
+    }
+
+    options.forEach(opt => {
+      opt.addEventListener("click", () => {
+        const name = opt.dataset.name;
+        const votes = setChoice(name);
+        render(votes, name);
+      });
+    });
+
+    cancelBtn.addEventListener("click", () => {
+      const votes = setChoice(null);
+      render(votes, null);
+    });
+
+    render(getVotes(), getChoice());
+  </script>
+</body>
+
+</html>
