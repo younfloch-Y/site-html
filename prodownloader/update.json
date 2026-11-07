@@ -1,6 +1,6 @@
 {
-  "version": "1.4.1",
+  "version": "1.4.0",
   "installer": "PRODownloader Setup.exe",
   "sha256": "2b04ca6944936d82bbfe5eb132640f0cf67d9b31b02fc4b645d07433999fb868",
-  "notes": "Test temporaire du bouton de mise a jour."
+  "notes": "Ajout du bouton de mise à jour intégré."
 }
